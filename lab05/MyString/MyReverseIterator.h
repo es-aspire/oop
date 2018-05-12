@@ -3,8 +3,7 @@
 class CMyString;
 
 template <typename ValueType>
-class CMyReverseIterator : public std::iterator<std::random_access_iterator_tag, ValueType>, 
-	public std::iterator<std::output_iterator_tag, ValueType>
+class CMyReverseIterator
 {
 	friend CMyString;
 
