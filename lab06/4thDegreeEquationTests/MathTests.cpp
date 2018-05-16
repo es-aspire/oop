@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "../FourthDegreeEquation/Math.h"
+#include "../FourthDegreeEquation/Math.cpp"
 #include "../FourthDegreeEquation/VariantUtils.h"
 
 SCENARIO("Test Solve2")
