@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-template <typename T, typename Less = std::less<>>
+template <typename T, typename Less = std::less<T>>
 bool FindMax(std::vector<T> const& arr, T& maxValue, Less const& less = Less())
 {
 	if (arr.empty())
@@ -11,15 +11,16 @@ bool FindMax(std::vector<T> const& arr, T& maxValue, Less const& less = Less())
 		return false;
 	}
 
-	maxValue = arr[0];
+	auto maxIt = arr.begin();
 
-	for (const auto& item : arr)
+	for (auto it = maxIt + 1; it != arr.end(), ++it)
 	{
-		if (less(maxValue, item))
+		if (less(*maxIt, *it))
 		{
-			maxValue = item;
+			maxIt = it;
 		}
 	}
 
+	maxValue = *maxIt;
 	return true;
 }

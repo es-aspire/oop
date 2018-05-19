@@ -5,12 +5,7 @@
 #include "Vector2D.h"
 
 using namespace TestUtill;
-
-TEST_CASE("123")
-{
-	REQUIRE(false);
-}
-
+	
 SCENARIO("FindMaxEx, default comparator")
 {
 	GIVEN("default comparassion")
