@@ -55,15 +55,8 @@ public:
 	std::string GetProtocolString() const;
 
 private:
-	void SetUrl();
+	void DenerateUrl();
 	void ParseUrl(std::string const& url);
-	unsigned short VerifyPortRange(unsigned short port);
-	std::string VerifyDomain(std::string const& domain);
-	std::string VerifyDocument(std::string const& document);
-	Protocol VerifyProtocolString(const std::string &protocolStr);
-	
-	unsigned short ParsePort(const Protocol &protocol, const std::string &portStr);
-	void ThrowWhenStringEmpty(std::string const& str, std::string const& msg);
 
 private:
 	std::string m_url;

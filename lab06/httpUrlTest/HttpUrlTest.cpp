@@ -128,7 +128,7 @@ TEST_CASE("HttUrlTest")
 			{
 				REQUIRE_THROWS_AS(CHttpUrl("!@#", "", Protocol::HTTP, 1), CUrlParsingError);
 			}
-			
+
 			AND_WHEN("domain contain only valid character")
 			{
 				AND_WHEN("port in valid range [1, 65535]")
@@ -185,19 +185,70 @@ TEST_CASE("HttUrlTest")
 			{
 				THEN("throws CUrlParsingError")
 				{
+					/*	try
+					{
+						CHttpUrl url("http://ya.ru:0");
+					}
+					catch (CUrlParsingError)
+					{
+						REQUIRE(true);
+					}
+					catch (...)
+					{
+						REQUIRE(false);
+					}*/
 					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:0"), CUrlParsingError);
+					/*		try
+					{
+						CHttpUrl url("http://ya.ru:65536");
+					}
+					catch (CUrlParsingError)
+					{
+						REQUIRE(false);
+					}*/
 					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:65536"), CUrlParsingError);
+					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:123456"), CUrlParsingError);
+				}
+
+				AND_WHEN("port >= 1 and port <= 65535")
+				{
+					THEN("not trow CUrlParsingError")
+					{
+						try
+						{
+							CHttpUrl url1("http://ya.ru:1");
+							CHttpUrl url2("http://ya.ru:4353");
+							CHttpUrl url3("http://ya.ru:65535");
+						}
+						catch (CUrlParsingError)
+						{
+							REQUIRE(false);
+						}
+						catch (...)
+						{
+							REQUIRE(false);
+						}
+					}
 				}
 			}
 
 			AND_WHEN("valid url")
 			{
-				THEN("throws CUrlParsingError")
+				AND_WHEN("url with port is equal a default port for protocol)")
 				{
-					VerifyWithUrl("http://google.com", "google.com", "/", Protocol::HTTP, 80, "http://google.com");
-					VerifyWithUrl("https://google.com", "google.com", "/", Protocol::HTTPS, 443, "https://google.com");
-					VerifyWithUrl("https://google.com:23", "google.com", "/", Protocol::HTTPS, 23, "https://google.com:23");
-					VerifyWithUrl("http://google.com:23", "google.com", "/", Protocol::HTTP, 23, "http://google.com:23");
+					THEN("url withour port")
+					{
+						VerifyWithUrl("http://google.com:80", "google.com", "/", Protocol::HTTP, 80, "http://google.com/");
+						VerifyWithUrl("https://google.com:443", "google.com", "/", Protocol::HTTPS, 443, "https://google.com/");
+					}
+				}
+
+				THEN("not throw CUrlParsingError")
+				{
+					VerifyWithUrl("http://google.com", "google.com", "/", Protocol::HTTP, 80, "http://google.com/");
+					VerifyWithUrl("https://google.com", "google.com", "/", Protocol::HTTPS, 443, "https://google.com/");
+					VerifyWithUrl("https://google.com:23", "google.com", "/", Protocol::HTTPS, 23, "https://google.com:23/");
+					VerifyWithUrl("http://google.com:23", "google.com", "/", Protocol::HTTP, 23, "http://google.com:23/");
 				}
 			}
 		}
@@ -211,7 +262,7 @@ TEST_CASE("output CHttpUrl")
 		CHttpUrl url("http://google.com/doc");
 		std::stringstream strm;
 		strm << url;
-	
+
 		REQUIRE(strm.str() == std::string("url: 'http://google.com/doc'\nprotocol: 'http'\nport: '80'\ndomain: 'google.com'\ndocument: '/doc'"));
 	}
 }

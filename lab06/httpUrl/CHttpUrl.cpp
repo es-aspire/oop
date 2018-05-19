@@ -3,10 +3,97 @@
 #include "CUrlParsingError.h"
 #include <regex>
 
+namespace
+{
+
+int VerifyPortRange(int port)
+{
+	constexpr int MIN_NUMBER_PORT = 1;
+	constexpr int MAX_NUMBER_PORT = 65535;
+
+	if (port < MIN_NUMBER_PORT || port > MAX_NUMBER_PORT)
+	{
+		throw CUrlParsingError("invalid port range " + port);
+	}
+
+	return port;
+}
+
+void ThrowWhenStringEmpty(std::string const& str, std::string const& msg)
+{
+	if (str.empty())
+	{
+		throw CUrlParsingError(msg);
+	}
+}
+
+std::string VerifyDomain(std::string const& domain)
+{
+	ThrowWhenStringEmpty(domain, "domain can't be empty");
+
+	constexpr char REGULAR_EXPRESSION[] = "^([A-Za-z0-9-.]+)?$";
+	std::regex pattern(REGULAR_EXPRESSION, std::regex_constants::icase);
+	std::smatch match;
+
+	if (!std::regex_match(domain, match, pattern))
+	{
+		throw CUrlParsingError("failed parse domain '" + domain + "'");
+	}
+
+	return match[1];
+}
+
+std::string VerifyDocument(std::string const& document)
+{
+	std::string result = document;
+	if (result.empty() || !result.empty() && result[0] != '/')
+	{
+		result = "/" + result;
+	}
+
+	return result;
+}
+
+Protocol VerifyProtocolString(const std::string& protocolStr)
+{
+	std::string lowerProtocolStr = protocolStr;
+
+	std::transform(lowerProtocolStr.begin(), lowerProtocolStr.end(),
+		lowerProtocolStr.begin(), ::tolower);
+
+	if (lowerProtocolStr == "http")
+	{
+		return Protocol::HTTP;
+	}
+	else if (lowerProtocolStr == "https")
+	{
+		return Protocol::HTTPS;
+	}
+
+	throw CUrlParsingError("unnkonw protocol");
+}
+
+constexpr unsigned short DEFAULT_HTTP_PORT = 80;
+constexpr unsigned short DEFAULT_HTTPS_PORT = 443;
+
+int ParsePort(const Protocol& protocol, const std::string& portStr)
+{
+	if (portStr.empty())
+	{
+		return static_cast<int>(protocol);
+	}
+
+	int portInteger = stoi(portStr);
+
+	return VerifyPortRange(portInteger);
+}
+
+} // namespace
+
 CHttpUrl::CHttpUrl(std::string const& url)
 {
 	ParseUrl(url);
-	m_url = url;
+	DenerateUrl();
 }
 
 CHttpUrl::CHttpUrl(std::string const& domain,
@@ -17,7 +104,7 @@ CHttpUrl::CHttpUrl(std::string const& domain,
 	, m_protocol(protocol)
 {
 	m_port = static_cast<unsigned short>(m_protocol);
-	SetUrl();
+	DenerateUrl();
 }
 
 CHttpUrl::CHttpUrl(
@@ -30,7 +117,7 @@ CHttpUrl::CHttpUrl(
 	, m_protocol(protocol)
 	, m_port(VerifyPortRange(port))
 {
-	SetUrl();
+	DenerateUrl();
 }
 
 std::string CHttpUrl::GetURL() const
@@ -68,7 +155,7 @@ unsigned short CHttpUrl::GetPort() const
 	return m_port;
 }
 
-void CHttpUrl::SetUrl()
+void CHttpUrl::DenerateUrl()
 {
 	m_url += GetProtocolString() + "://" + m_domain;
 	if (m_port != static_cast<unsigned short>(m_protocol))
@@ -76,7 +163,7 @@ void CHttpUrl::SetUrl()
 		m_url += ":" + std::to_string(m_port);
 	}
 
-	m_url += (!m_document.empty() ? m_document :  "/" + m_document);
+	m_url += (!m_document.empty() ? m_document : "/" + m_document);
 }
 
 void CHttpUrl::ParseUrl(std::string const& url)
@@ -96,86 +183,6 @@ void CHttpUrl::ParseUrl(std::string const& url)
 	m_domain = VerifyDomain(match[2]);
 	m_port = ParsePort(m_protocol, match[4]);
 	m_document = VerifyDocument(match[6]);
-}
-
-Protocol CHttpUrl::VerifyProtocolString(const std::string& protocolStr)
-{
-	std::string lowerProtocolStr = protocolStr;
-
-	std::transform(lowerProtocolStr.begin(), lowerProtocolStr.end(),
-		lowerProtocolStr.begin(), ::tolower);
-
-	if (lowerProtocolStr == "http")
-	{
-		return Protocol::HTTP;
-	}
-	else if (lowerProtocolStr == "https")
-	{
-		return Protocol::HTTPS;
-	}
-
-	throw CUrlParsingError("unnkonw protocol");
-}
-
-std::string CHttpUrl::VerifyDomain(std::string const& domain)
-{
-	ThrowWhenStringEmpty(domain, "domain can't be empty");
-
-	constexpr char REGULAR_EXPRESSION[] = "^([A-Za-z0-9-.]+)?$";
-	std::regex pattern(REGULAR_EXPRESSION, std::regex_constants::icase);
-	std::smatch match;
-
-	if (!std::regex_match(domain, match, pattern))
-	{
-		throw CUrlParsingError("failed parse domain '" + domain + "'");
-	}
-
-	return match[1];
-}
-
-std::string CHttpUrl::VerifyDocument(std::string const& document)
-{
-	std::string result = document;
-	if (result.empty() || !result.empty() && result[0] != '/')
-	{
-		result = "/" + result;
-	}
-
-	return result;
-}
-
-unsigned short CHttpUrl::VerifyPortRange(unsigned short port)
-{
-	constexpr unsigned short MIN_NUMBER_PORT = 1;
-	constexpr unsigned short MAX_NUMBER_PORT = 65535;
-
-	if (port < MIN_NUMBER_PORT || port > MAX_NUMBER_PORT)
-	{
-		throw CUrlParsingError("invalid port range " + port);
-	}
-
-	return port;
-}
-
-constexpr unsigned short DEFAULT_HTTP_PORT = 80;
-constexpr unsigned short DEFAULT_HTTPS_PORT = 443;
-
-unsigned short CHttpUrl::ParsePort(const Protocol& protocol, const std::string& portStr)
-{
-	if (portStr.empty())
-	{
-		return static_cast<unsigned short>(protocol);
-	}
-
-	return VerifyPortRange(static_cast<unsigned short>(stoi(portStr)));
-}
-
-void CHttpUrl::ThrowWhenStringEmpty(std::string const& str, std::string const& msg)
-{
-	if (str.empty())
-	{
-		throw CUrlParsingError(msg);
-	}
 }
 
 std::ostream& operator<<(std::ostream& output, CHttpUrl const& httpUrl)
