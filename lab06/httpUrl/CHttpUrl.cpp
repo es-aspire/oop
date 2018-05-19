@@ -113,6 +113,8 @@ Protocol CHttpUrl::VerifyProtocolString(const std::string& protocolStr)
 	{
 		return Protocol::HTTPS;
 	}
+
+	throw CUrlParsingError("unnkonw protocol");
 }
 
 std::string CHttpUrl::VerifyDomain(std::string const& domain)
