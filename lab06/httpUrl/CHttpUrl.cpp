@@ -6,7 +6,7 @@
 namespace
 {
 
-int VerifyPortRange(int port)
+unsigned short VerifyPortRange(int port)
 {
 	constexpr int MIN_NUMBER_PORT = 1;
 	constexpr int MAX_NUMBER_PORT = 65535;
@@ -16,7 +16,7 @@ int VerifyPortRange(int port)
 		throw CUrlParsingError("invalid port range " + port);
 	}
 
-	return port;
+	return static_cast<unsigned short>(port);
 }
 
 void ThrowWhenStringEmpty(std::string const& str, std::string const& msg)
@@ -70,17 +70,17 @@ Protocol VerifyProtocolString(const std::string& protocolStr)
 		return Protocol::HTTPS;
 	}
 
-	throw CUrlParsingError("unnkonw protocol");
+	throw CUrlParsingError("unknown protocol");
 }
 
 constexpr unsigned short DEFAULT_HTTP_PORT = 80;
 constexpr unsigned short DEFAULT_HTTPS_PORT = 443;
 
-int ParsePort(const Protocol& protocol, const std::string& portStr)
+unsigned short ParsePort(const Protocol& protocol, const std::string& portStr)
 {
 	if (portStr.empty())
 	{
-		return static_cast<int>(protocol);
+		return static_cast<unsigned short>(protocol);
 	}
 
 	int portInteger = stoi(portStr);

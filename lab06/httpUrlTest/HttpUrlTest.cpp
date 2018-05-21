@@ -2,10 +2,6 @@
 #include "../httpUrl/CHttpUrl.cpp"
 #include "../httpUrl/CUrlParsingError.h"
 
-TEST_CASE("HttpUrlTest")
-{
-}
-
 bool IsEqualProtocol(Protocol lhs, Protocol rhs)
 {
 	return static_cast<unsigned short>(lhs) == static_cast<unsigned short>(rhs);
@@ -76,7 +72,7 @@ void VerifyWithUrl(std::string const& url, std::string const& expectedDomain, st
 
 TEST_CASE("HttUrlTest")
 {
-	GIVEN("INitially")
+	GIVEN("Initially")
 	{
 		WHEN("domain, document, protocol and port passed to CHttpUrl construct")
 		{
@@ -124,12 +120,12 @@ TEST_CASE("HttUrlTest")
 				REQUIRE_THROWS_AS(CHttpUrl("", "", Protocol::HTTP, 1), CUrlParsingError);
 			}
 
-			AND_WHEN("domain contain of unresolved character")
+			AND_WHEN("domain contains of unresolved character")
 			{
 				REQUIRE_THROWS_AS(CHttpUrl("!@#", "", Protocol::HTTP, 1), CUrlParsingError);
 			}
 
-			AND_WHEN("domain contain only valid character")
+			AND_WHEN("domain contains only valid character")
 			{
 				AND_WHEN("port in valid range [1, 65535]")
 				{
