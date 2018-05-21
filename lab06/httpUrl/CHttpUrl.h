@@ -55,7 +55,7 @@ public:
 	std::string GetProtocolString() const;
 
 private:
-	void DenerateUrl();
+	void GenerateUrl();
 	void ParseUrl(std::string const& url);
 
 private:

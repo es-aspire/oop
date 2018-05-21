@@ -93,7 +93,7 @@ int ParsePort(const Protocol& protocol, const std::string& portStr)
 CHttpUrl::CHttpUrl(std::string const& url)
 {
 	ParseUrl(url);
-	DenerateUrl();
+	GenerateUrl();
 }
 
 CHttpUrl::CHttpUrl(std::string const& domain,
@@ -104,7 +104,7 @@ CHttpUrl::CHttpUrl(std::string const& domain,
 	, m_protocol(protocol)
 {
 	m_port = static_cast<unsigned short>(m_protocol);
-	DenerateUrl();
+	GenerateUrl();
 }
 
 CHttpUrl::CHttpUrl(
@@ -117,7 +117,7 @@ CHttpUrl::CHttpUrl(
 	, m_protocol(protocol)
 	, m_port(VerifyPortRange(port))
 {
-	DenerateUrl();
+	GenerateUrl();
 }
 
 std::string CHttpUrl::GetURL() const
@@ -155,7 +155,7 @@ unsigned short CHttpUrl::GetPort() const
 	return m_port;
 }
 
-void CHttpUrl::DenerateUrl()
+void CHttpUrl::GenerateUrl()
 {
 	m_url += GetProtocolString() + "://" + m_domain;
 	if (m_port != static_cast<unsigned short>(m_protocol))
