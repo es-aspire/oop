@@ -185,9 +185,11 @@ TEST_CASE("HttUrlTest")
 			{
 				THEN("throws CUrlParsingError")
 				{
-					/*	try
+					try
 					{
-						CHttpUrl url("http://ya.ru:0");
+						CHttpUrl url1("http://ya.ru:0");
+						CHttpUrl url2("http://ya.ru:65536");
+						CHttpUrl url3("http://ya.ru:123456");
 					}
 					catch (CUrlParsingError)
 					{
@@ -196,38 +198,27 @@ TEST_CASE("HttUrlTest")
 					catch (...)
 					{
 						REQUIRE(false);
-					}*/
-					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:0"), CUrlParsingError);
-					/*		try
+					}
+				}
+			}
+
+			AND_WHEN("port >= 1 and port <= 65535")
+			{
+				THEN("not trow CUrlParsingError")
+				{
+					try
 					{
-						CHttpUrl url("http://ya.ru:65536");
+						CHttpUrl url1("http://ya.ru:1");
+						CHttpUrl url2("http://ya.ru:4353");
+						CHttpUrl url3("http://ya.ru:65535");
 					}
 					catch (CUrlParsingError)
 					{
 						REQUIRE(false);
-					}*/
-					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:65536"), CUrlParsingError);
-					REQUIRE_THROWS_AS(CHttpUrl("http://google.com:123456"), CUrlParsingError);
-				}
-
-				AND_WHEN("port >= 1 and port <= 65535")
-				{
-					THEN("not trow CUrlParsingError")
+					}
+					catch (...)
 					{
-						try
-						{
-							CHttpUrl url1("http://ya.ru:1");
-							CHttpUrl url2("http://ya.ru:4353");
-							CHttpUrl url3("http://ya.ru:65535");
-						}
-						catch (CUrlParsingError)
-						{
-							REQUIRE(false);
-						}
-						catch (...)
-						{
-							REQUIRE(false);
-						}
+						REQUIRE(false);
 					}
 				}
 			}
