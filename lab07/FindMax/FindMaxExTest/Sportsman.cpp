@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include "Sportsman.h"
 
-Sportsman::Sportsman(std::string const& lfm, int growth, int weight)
-	: lfm(lfm)
+Sportsman::Sportsman(std::string const& name, int growth, int weight)
+	: name(name)
 	, growth(growth)
 	, weight(weight)
 {
 }
 
-bool Sportsman::operator<(Sportsman const& other)
-{
-	return lfm < other.lfm;
-}
-
 bool Sportsman::operator==(const Sportsman& other)
 {
-	return lfm == other.lfm && growth == other.growth && weight == other.weight;
+	return name == other.name && growth == other.growth && weight == other.weight;
+}
+
+bool operator<(Sportsman const& lhs, Sportsman const& rhs)
+{
+	return lhs.name < rhs.name;
 }
