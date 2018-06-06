@@ -157,14 +157,6 @@ typename CMyArrayIterator<T>::self_type& CMyArrayIterator<T>::operator-=(differe
 	return *this;
 }
 
-//template<typename T>
-//typename CMyArrayIterator<T>::self_type& CMyArrayIterator<T>::operator+(difference_type offset) const
-//{
-//	self_type tmp = *this;
-//
-//	return (tmp += offset);
-//}
-
 template <typename T>
 CMyArrayIterator<T> CMyArrayIterator<T>::operator+(difference_type offset) const
 {
